@@ -1,25 +1,35 @@
 <template>
-  <div class="booking-form">
-    <h3>Бронирование ПК #{{ pc.id }}</h3>
+  <div class="booking-form glass-card fade-in">
 
-    <label>Тариф</label>
-    <select v-model="tariff">
-      <option value="" disabled>Выбери тариф</option>
-      <option v-for="t in tariffs" :key="t.id" :value="t">
-        {{ t.name }} — {{ t.price_per_hour }}₽/час
-      </option>
-    </select>
+    <h3 class="title">Бронирование ПК #{{ pc.id }}</h3>
 
-    <label>Начало</label>
-    <input type="datetime-local" v-model="startTime" />
+    <div class="form-group">
+      <label>Тариф</label>
+      <select v-model="tariff">
+        <option value="" disabled>Выбери тариф</option>
+        <option v-for="t in tariffs" :key="t.id" :value="t">
+          {{ t.name }} — {{ t.price_per_hour }}₽/час
+        </option>
+      </select>
+    </div>
 
-    <label>Количество часов</label>
-    <input type="number" min="1" v-model="hours" />
+    <div class="form-group">
+      <label>Начало</label>
+      <input type="datetime-local" v-model="startTime" />
+    </div>
 
-    <button @click="book">Забронировать</button>
+    <div class="form-group">
+      <label>Количество часов</label>
+      <input type="number" min="1" v-model="hours" />
+    </div>
 
-    <p v-if="msg" class="msg">{{ msg }}</p>
-    <p v-if="err" class="err">{{ err }}</p>
+    <button class="btn-primary submit-btn" @click="book">
+      Забронировать
+    </button>
+
+    <p v-if="msg" class="msg success glass-card">{{ msg }}</p>
+    <p v-if="err" class="msg error glass-card">{{ err }}</p>
+
   </div>
 </template>
 
@@ -55,10 +65,10 @@ async function book() {
       duration_hours: hours.value
     })
 
-    msg.value = 'Бронь успешно создана'
+    msg.value = 'Бронь успешно создана!'
     emit('created')
   } catch (e) {
-    err.value = e.response?.data?.error || 'Ошибка'
+    err.value = e.response?.data?.error || 'Ошибка бронирования'
   }
 }
 
@@ -67,16 +77,5 @@ onMounted(loadTariffs)
 </script>
 
 <style scoped>
-.booking-form {
-  margin-top: 20px;
-  padding: 15px;
-  max-width: 350px;
-  border: 1px solid #ccc;
-}
-.msg {
-  color: green;
-}
-.err {
-  color: red;
-}
+
 </style>

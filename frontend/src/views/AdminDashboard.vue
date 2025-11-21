@@ -1,51 +1,63 @@
 <template>
-  <div class="admin-dashboard">
-    <aside class="sidebar">
-      <button 
-        v-for="item in menu" 
-        :key="item.key"
-        :class="{ active: active === item.key }"
-        @click="active = item.key"
-      >
-        {{ item.label }}
-      </button>
+  <div class="admin-dashboard fade-in">
+    
+    <aside class="sidebar glass-panel">
+      <div class="sidebar-header">
+        <h3>Admin Panel</h3>
+      </div>
+
+      <div class="menu-list">
+        <button 
+          v-for="item in menu" 
+          :key="item.key"
+          class="nav-btn"
+          :class="{ active: active === item.key }"
+          @click="active = item.key"
+        >
+          <span class="indicator"></span>
+          {{ item.label }}
+        </button>
+      </div>
     </aside>
 
-    <section class="content">
-      <AdminCrudTable
-        v-if="active === 'pcs'"
-        title="Компьютеры"
-        apiPath="/api/admin/pcs"
-        :columns="['cpu_id','gpu_id','os_id']"
-      />
+    <section class="content glass-card">
+      <transition name="fade" mode="out-in">
+        <div :key="active" class="table-wrapper">
+          <AdminCrudTable
+            v-if="active === 'pcs'"
+            title="Компьютеры"
+            apiPath="/api/admin/pcs"
+            :columns="['id', 'cpu_id','gpu_id','os_id']" 
+          />
+          <AdminCrudTable
+            v-if="active === 'tariffs'"
+            title="Тарифы"
+            apiPath="/api/admin/tariffs"
+            :columns="['name','price_per_hour','hours_number','description']"
+          />
 
-      <AdminCrudTable
-        v-if="active === 'tariffs'"
-        title="Тарифы"
-        apiPath="/api/admin/tariffs"
-        :columns="['name','price_per_hour','hours_number','description']"
-      />
+          <AdminCrudTable
+            v-if="active === 'cpu'"
+            title="CPU"
+            apiPath="/api/admin/cpus"
+            :columns="['name']"
+          />
 
-      <AdminCrudTable
-        v-if="active === 'cpu'"
-        title="CPU"
-        apiPath="/api/admin/cpus"
-        :columns="['name']"
-      />
+          <AdminCrudTable
+            v-if="active === 'gpu'"
+            title="GPU"
+            apiPath="/api/admin/gpus"
+            :columns="['name']"
+          />
 
-      <AdminCrudTable
-        v-if="active === 'gpu'"
-        title="GPU"
-        apiPath="/api/admin/gpus"
-        :columns="['name']"
-      />
-
-      <AdminCrudTable
-        v-if="active === 'os'"
-        title="Операционные системы"
-        apiPath="/api/admin/oses"
-        :columns="['name']"
-      />
+          <AdminCrudTable
+            v-if="active === 'os'"
+            title="Операционные системы"
+            apiPath="/api/admin/oses"
+            :columns="['name']"
+          />
+        </div>
+      </transition>
     </section>
   </div>
 </template>
@@ -57,8 +69,8 @@ import AdminCrudTable from '../components/AdminCrudTable.vue'
 const menu = [
   { key: 'pcs', label: 'Компьютеры' },
   { key: 'tariffs', label: 'Тарифы' },
-  { key: 'cpu', label: 'CPU' },
-  { key: 'gpu', label: 'GPU' },
+  { key: 'cpu', label: 'Процессоры' },
+  { key: 'gpu', label: 'Видеокарты' },
   { key: 'os', label: 'ОС' },
 ]
 
@@ -66,37 +78,76 @@ const active = ref('pcs')
 </script>
 
 <style scoped>
-.admin-dashboard {
-  display: flex;
-  height: calc(100vh - 60px);
+/* Используем глобальный grid из main.css .admin-dashboard */
+
+.sidebar-header {
+  padding: 0 1rem 1.5rem 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-glass);
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.sidebar {
-  width: 200px;
-  background: #222;
-  padding: 10px;
+.menu-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
-.sidebar button {
-  background: #333;
-  border: 1px solid #444;
-  padding: 10px;
-  color: white;
-  cursor: pointer;
+.nav-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
   text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.sidebar button.active {
-  background: #555;
-  border-left: 4px solid #00b4ff;
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-main);
+  padding-left: 1.5rem; /* Эффект сдвига */
 }
 
-.content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
+.nav-btn.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--glow);
+}
+
+/* Декоративная точка слева у активного элемента */
+.indicator {
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.3s ease;
+}
+
+.nav-btn.active .indicator {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Анимация смены таблиц */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

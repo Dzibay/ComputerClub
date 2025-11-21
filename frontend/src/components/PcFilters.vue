@@ -1,34 +1,51 @@
 <template>
-  <div class="filters">
-    <h3>Фильтры</h3>
+  <div class="filters-container">
+    <div class="filter-header">
+      <h3>🚀 Поиск станции</h3>
+      <span class="filter-hint">Настройте параметры под себя</span>
+    </div>
 
-    <label>CPU</label>
-    <select v-model="cpu">
-      <option value="">Любой</option>
-      <option v-for="c in cpus" :key="c.id" :value="c.id">{{ c.name }}</option>
-    </select>
+    <div class="filters-grid">
+      <div class="field">
+        <label>Процессор (CPU)</label>
+        <select v-model="cpu">
+          <option value="">Все модели</option>
+          <option v-for="c in cpus" :key="c.id" :value="c.id">{{ c.name }}</option>
+        </select>
+      </div>
 
-    <label>GPU</label>
-    <select v-model="gpu">
-      <option value="">Любой</option>
-      <option v-for="g in gpus" :key="g.id" :value="g.id">{{ g.name }}</option>
-    </select>
+      <div class="field">
+        <label>Видеокарта (GPU)</label>
+        <select v-model="gpu">
+          <option value="">Все карты</option>
+          <option v-for="g in gpus" :key="g.id" :value="g.id">{{ g.name }}</option>
+        </select>
+      </div>
 
-    <label>OS</label>
-    <select v-model="os">
-      <option value="">Любая</option>
-      <option v-for="o in oses" :key="o.id" :value="o.id">{{ o.name }}</option>
-    </select>
+      <div class="field">
+        <label>Операционка</label>
+        <select v-model="os">
+          <option value="">Любая OS</option>
+          <option v-for="o in oses" :key="o.id" :value="o.id">{{ o.name }}</option>
+        </select>
+      </div>
 
-    <label>Дата</label>
-    <input type="datetime-local" v-model="date" />
+      <div class="field">
+        <label>Дата и время</label>
+        <input type="datetime-local" v-model="date" class="date-input" />
+      </div>
 
-    <label>Количество часов</label>
-    <input type="number" min="1" v-model="hours" />
+      <div class="field small">
+        <label>Часы</label>
+        <input type="number" min="1" max="12" v-model="hours" />
+      </div>
 
-    <button @click="applyFilters">
-      Применить
-    </button>
+      <div class="field action">
+        <button class="btn-primary full-btn" @click="applyFilters">
+          Найти
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,12 +85,38 @@ onMounted(load)
 </script>
 
 <style scoped>
-.filters {
+.filter-header {
+  margin-bottom: 1.5rem;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 280px;
-  padding: 10px;
-  border: 1px solid #ccc;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.filter-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.2rem;
+  align-items: end;
+}
+
+.field.small {
+  flex: 0 0 80px; /* Узкое поле для часов */
+  min-width: 80px;
+}
+
+.full-btn {
+  width: 100%;
+  height: 46px; /* Высота чтобы совпадать с инпутами */
+  margin-bottom: 1rem; /* Компенсация margin-bottom у инпутов */
+}
+
+/* Убираем иконку календаря в Chrome для темной темы */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
 }
 </style>

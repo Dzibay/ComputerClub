@@ -1,16 +1,34 @@
 <template>
-  <div>
-    <h2>Бронирование ПК</h2>
+  <div class="booking-page fade-in">
+    
+    <h2 class="page-title">Бронирование</h2>
 
-    <PcFilters @apply="loadPcs" />
-    <PcList :pcs="pcs" @select="selectedPc = $event" />
+    <section class="filters-section glass-card">
+      <PcFilters @apply="loadPcs" />
+    </section>
 
-    <BookingForm v-if="selectedPc" :pc="selectedPc" @created="refresh" />
+    <section class="list-section">
+      <PcList :pcs="pcs" @select="scrollToForm" />
+    </section>
+
+    <div v-if="selectedPc" id="booking-form" class="form-section glass-card fade-in">
+      <div class="form-header">
+        <h3>Подтверждение брони</h3>
+        <button class="close-btn" @click="selectedPc = null">✕</button>
+      </div>
+      
+      <p class="selected-info">
+        Вы выбрали <strong>Station {{ selectedPc.id }}</strong>
+      </p>
+
+      <BookingForm :pc="selectedPc" @created="refresh" />
+    </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import api from '../api/axios'
 import PcFilters from '../components/PcFilters.vue'
 import PcList from '../components/PcList.vue'
@@ -26,6 +44,15 @@ async function loadPcs(filters = {}) {
 
 function refresh() {
   selectedPc.value = null
+  loadPcs({})
+}
+
+function scrollToForm(pc) {
+  selectedPc.value = pc
+  // Плавный скролл к форме
+  nextTick(() => {
+    document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })
+  })
 }
 
 onMounted(() => {
@@ -33,3 +60,47 @@ onMounted(() => {
 })
 </script>
 
+<style scoped>
+.booking-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem 1rem;
+}
+
+.filters-section {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.list-section {
+  margin-bottom: 2rem;
+}
+
+.form-section {
+  padding: 2rem;
+  border: 1px solid var(--primary); /* Акцент на активной форме */
+  box-shadow: 0 0 30px rgba(99, 102, 241, 0.1);
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.close-btn:hover { color: white; }
+
+.selected-info {
+  margin-bottom: 1.5rem;
+  color: var(--text-muted);
+}
+.selected-info strong { color: var(--primary); }
+</style>

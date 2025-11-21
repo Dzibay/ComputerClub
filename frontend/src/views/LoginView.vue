@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <h2>Вход</h2>
-    <input v-model="email" placeholder="Email" />
-    <input v-model="password" type="password" placeholder="Пароль" />
+  <div class="auth-page fade-in">
+    <div class="glass-card auth-form">
+      <h2>Вход</h2>
+      <input v-model="email" placeholder="Email" />
+      <input v-model="password" type="password" placeholder="Пароль" />
 
-    <button @click="submit">Войти</button>
+      <button @click="submit">Войти</button>
 
-    <div v-if="error" class="error">{{ error }}</div>
+      <div v-if="error" class="error">{{ error }}</div>
+    </div>
   </div>
 </template>
 
@@ -33,8 +35,15 @@ async function submit() {
 </script>
 
 <style scoped>
-.error {
-  color: red;
-  margin-top: 10px;
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+.auth-form {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
 }
 </style>
