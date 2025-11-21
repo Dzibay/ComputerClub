@@ -52,22 +52,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import api from '../api/axios'
+import { useCabinetStore } from '../store/cabinet'
 
-const cpus = ref([])
-const gpus = ref([])
-const oses = ref([])
+const cabinetStore = useCabinetStore()
+
+// Используем computed или просто берем значения, если они не меняются
+const cpus = cabinetStore.dictionaries.cpus
+const gpus = cabinetStore.dictionaries.gpus
+const oses = cabinetStore.dictionaries.oses
 
 const cpu = ref('')
 const gpu = ref('')
 const os = ref('')
 const date = ref('')
 const hours = ref(1)
-
-async function load() {
-  cpus.value = (await api.get('/api/admin/cpus')).data
-  gpus.value = (await api.get('/api/admin/gpus')).data
-  oses.value = (await api.get('/api/admin/oses')).data
-}
 
 function applyFilters() {
   const filters = {
@@ -81,7 +79,6 @@ function applyFilters() {
 }
 
 const emit = defineEmits(['apply'])
-onMounted(load)
 </script>
 
 <style scoped>

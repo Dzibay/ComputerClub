@@ -2,45 +2,43 @@
   <div class="cabinet-page fade-in">
     <h2 class="page-title">Личный кабинет</h2>
 
-    <div v-if="profile" class="cabinet-wrapper">
+    <div v-if="cabinetStore.user" class="cabinet-wrapper">
 
       <div class="glass-card user-card">
         <h3 class="section-title">👤 Профиль</h3>
-        
         <div class="card-content">
           <div class="info-block">
             <span class="label">Имя игрока</span>
-            <span class="value highlight">{{ profile.user.full_name }}</span>
+            <span class="value highlight">{{ cabinetStore.user.full_name }}</span>
           </div>
-
           <div class="info-block">
             <span class="label">Текущий баланс</span>
-            <span class="value balance">{{ profile.user.balance }} ₽</span>
+            <span class="value balance">{{ cabinetStore.user.balance }} ₽</span>
           </div>
         </div>
       </div>
 
-      <div class="glass-card booking-card" :class="{ 'active-glow': profile.active_booking }">
+      <div class="glass-card booking-card" :class="{ 'active-glow': cabinetStore.activeBooking }">
         <h3 class="section-title">🎮 Активная сессия</h3>
 
-        <div v-if="profile.active_booking" class="booking-details">
+        <div v-if="cabinetStore.activeBooking" class="booking-details">
           <div class="row">
             <span class="label">Компьютер:</span>
-            <span class="value">PC #{{ profile.active_booking.pc_id }}</span>
+            <span class="value">PC #{{ cabinetStore.activeBooking.pc_id }}</span>
           </div>
           <div class="row">
             <span class="label">Начало:</span>
-            <span class="value">{{ new Date(profile.active_booking.start_time).toLocaleString() }}</span>
+            <span class="value">{{ new Date(cabinetStore.activeBooking.start_time).toLocaleString() }}</span>
           </div>
 
-          <button class="btn-danger cancel-btn" @click="cancel(profile.active_booking.id)">
+          <button class="btn-danger cancel-btn" @click="cabinetStore.cancelBooking">
             Отменить бронь
           </button>
         </div>
 
         <div v-else class="empty-state">
           <p>Сейчас вы не играете.</p>
-          <router-link to="/booking" class="btn-outline small">Забронировать</router-link>
+          <router-link to="/cabinet/bookings" class="btn-outline small">Забронировать</router-link>
         </div>
       </div>
 
@@ -49,22 +47,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import api from '../api/axios'
+import { useCabinetStore } from '../store/cabinet'
 
-const profile = ref(null)
-
-async function load() {
-  const { data } = await api.get('/api/cabinet')
-  profile.value = data
-}
-
-async function cancel(id) {
-  await api.post('/api/cabinet/cancel', { booking_id: id })
-  load()
-}
-
-onMounted(load)
+const cabinetStore = useCabinetStore()
+// onMounted не нужен, данные уже есть в store благодаря Layout
 </script>
 
 <style scoped>

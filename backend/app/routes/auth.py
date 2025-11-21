@@ -9,6 +9,7 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.post("/register")
 def register():
     data = request.get_json()
+    print(data)
     email = data["email"]
     password = data["password"]
     full_name = data["full_name"]

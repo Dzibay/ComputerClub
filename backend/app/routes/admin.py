@@ -22,7 +22,6 @@ def admin_required(fn):
 # ---------------- CPU CRUD ----------------
 
 @admin_bp.get("/cpus")
-@admin_required
 def get_cpus():
     return jsonify(supabase.table("cpus").select("*").execute().data)
 
@@ -52,7 +51,6 @@ def delete_cpu(cpu_id):
 # ---------------- GPU CRUD ----------------
 
 @admin_bp.get("/gpus")
-@admin_required
 def get_gpus():
     return jsonify(supabase.table("gpus").select("*").execute().data)
 
@@ -82,7 +80,6 @@ def delete_gpu(gpu_id):
 # ---------------- OS CRUD ----------------
 
 @admin_bp.get("/oses")
-@admin_required
 def get_oses():
     return jsonify(supabase.table("oses").select("*").execute().data)
 
@@ -112,7 +109,6 @@ def delete_os(os_id):
 # ---------------- Tariffs CRUD ----------------
 
 @admin_bp.get("/tariffs")
-@admin_required
 def get_tariffs():
     return jsonify(supabase.table("tariffs").select("*").execute().data)
 

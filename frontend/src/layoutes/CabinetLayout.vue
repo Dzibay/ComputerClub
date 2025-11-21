@@ -1,57 +1,65 @@
 <template>
   <div class="cabinet-layout fade-in">
+    <div v-if="cabinetStore.isLoading" class="loading-overlay">
+      Загрузка кабинета...
+    </div>
 
-    <aside class="sidebar glass-panel">
-
-      <div class="profile-block" v-if="user">
-        <div class="avatar-placeholder">
-          {{ user.full_name.charAt(0).toUpperCase() }}
+    <template v-else>
+      <aside class="sidebar glass-panel">
+        <div class="profile-block" v-if="cabinetStore.user">
+          <div class="avatar-placeholder">
+            {{ cabinetStore.user.full_name.charAt(0).toUpperCase() }}
+          </div>
+          <h3 class="username">{{ cabinetStore.user.full_name }}</h3>
+          <p class="balance-badge">
+            {{ cabinetStore.user.balance }} ₽
+          </p>
         </div>
-        <h3 class="username">{{ user.full_name }}</h3>
-        <p class="balance-badge">
-          {{ user.balance }} ₽
-        </p>
-      </div>
 
-      <nav class="nav-menu">
-        <RouterLink to="/cabinet" exact-active-class="active">
-          <span class="icon">🏠</span> Главная
-        </RouterLink>
-        
-        <RouterLink to="/cabinet/bookings" active-class="active">
-          <span class="icon">🎮</span> Бронирование
-        </RouterLink>
-        
-        <RouterLink to="/cabinet/payments" active-class="active">
-          <span class="icon">💳</span> Платежи
-        </RouterLink>
-        
-        <RouterLink to="/cabinet/settings" active-class="active">
-          <span class="icon">⚙️</span> Настройки
-        </RouterLink>
-      </nav>
-    </aside>
+        <nav class="nav-menu">
+          <RouterLink to="/cabinet" exact-active-class="active">
+            <span class="icon">🏠</span> Главная
+          </RouterLink>
+          <RouterLink to="/cabinet/bookings" active-class="active">
+            <span class="icon">🎮</span> Бронирование
+          </RouterLink>
+          </nav>
+      </aside>
 
-    <main class="content glass-card">
-      <router-view v-slot="{ Component }">
-        <transition name="fade" mode="out-in">
-          <component :is="Component" />
-        </transition>
-      </router-view>
-    </main>
-
+      <main class="content glass-card">
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
+      </main>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useAuthStore } from '../store/auth'
+import { onMounted } from 'vue'
+import { useCabinetStore } from '../store/cabinet'
 
-const auth = useAuthStore()
-const user = computed(() => auth.user)
+const cabinetStore = useCabinetStore()
+
+// Загружаем всё при входе в Layout
+onMounted(() => {
+  cabinetStore.initCabinet()
+})
 </script>
 
 <style scoped>
+/* Ваши стили + стиль лоадера */
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
 /* --- Layout Grid --- */
 .cabinet-layout {
   display: grid;

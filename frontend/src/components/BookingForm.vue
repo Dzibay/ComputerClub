@@ -3,6 +3,7 @@
 
     <h3 class="title">Бронирование ПК #{{ pc.id }}</h3>
 
+    <!-- Тариф -->
     <div class="form-group">
       <label>Тариф</label>
       <select v-model="tariff">
@@ -13,14 +14,32 @@
       </select>
     </div>
 
+    <!-- Дата -->
     <div class="form-group">
-      <label>Начало</label>
-      <input type="datetime-local" v-model="startTime" />
+      <label>Дата бронирования</label>
+      <input type="date" v-model="date" @change="resetSelection" />
     </div>
 
+    <!-- Часовые слоты -->
     <div class="form-group">
-      <label>Количество часов</label>
-      <input type="number" min="1" v-model="hours" />
+      <label>Выберите время</label>
+
+      <div class="slots-grid">
+        <div
+          v-for="slot in timeSlots"
+          :key="slot.id"
+          class="slot"
+          :class="{
+            disabled: slot.disabled,
+            selected: slotSelected(slot.id),
+            start: slot.id === startHour,
+            end: slot.id === endHour - 1
+          }"
+          @click="selectSlot(slot)"
+        >
+          {{ slot.label }}
+        </div>
+      </div>
     </div>
 
     <button class="btn-primary submit-btn" @click="book">
@@ -34,48 +53,189 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import api from '../api/axios'
+import { useCabinetStore } from '../store/cabinet' // 1. Импортируем стор
 
-const props = defineProps({
-  pc: Object
-})
+const props = defineProps({ pc: Object })
+const emit = defineEmits(['created'])
+
+// 2. Инициализируем стор
+const cabinetStore = useCabinetStore()
 
 const tariffs = ref([])
 const tariff = ref(null)
-const startTime = ref('')
-const hours = ref(1)
 
-const msg = ref('')
-const err = ref('')
+const date = ref("")
+const startHour = ref(null)
+const endHour = ref(null)
+
+const msg = ref("")
+const err = ref("")
 
 async function loadTariffs() {
-  tariffs.value = (await api.get('/api/admin/tariffs')).data
-}
-
-async function book() {
-  msg.value = ''
-  err.value = ''
-
   try {
-    await api.post('/api/bookings', {
-      pc_id: props.pc.id,
-      tariff_id: tariff.value.id,
-      start_time: startTime.value,
-      duration_hours: hours.value
-    })
-
-    msg.value = 'Бронь успешно создана!'
-    emit('created')
+    // Тарифы можно оставить локально, так как они нужны только здесь
+    const { data } = await api.get('/api/admin/tariffs')
+    tariffs.value = data
   } catch (e) {
-    err.value = e.response?.data?.error || 'Ошибка бронирования'
+    console.error("Ошибка загрузки тарифов", e)
   }
 }
 
-const emit = defineEmits(['created'])
+// ------------------- ВРЕМЕННЫЕ СЛОТЫ (Без изменений) --------------------
+const timeSlots = computed(() => {
+  if (!date.value) return []
+
+  const slots = []
+  const baseDate = new Date(date.value + "T00:00:00")
+
+  for (let i = 0; i < 24; i++) { // Исправил 36 на 24 (обычно сутки), но если клуб 24/7 можно оставить как было
+    const d = new Date(baseDate.getTime() + i * 3600000)
+    const label = `${String(d.getHours()).padStart(2, "0")}:00`
+
+    slots.push({
+      id: i,
+      ts: d.getTime(),
+      label,
+      disabled: slotBusy(d)
+    })
+  }
+  return slots
+})
+
+function slotBusy(slotDate) {
+  if (!props.pc.busy) return false
+  const slotStart = slotDate.getTime()
+  const slotEnd = slotStart + 3600000
+  return props.pc.busy.some(u => {
+    const busyStart = new Date(u.start).getTime()
+    const busyEnd = new Date(u.end).getTime()
+    return slotStart < busyEnd && slotEnd > busyStart
+  })
+}
+
+// ------------------- ЛОГИКА ВЫБОРА (Без изменений) --------------------
+function resetSelection() {
+  startHour.value = null
+  endHour.value = null
+}
+
+function slotSelected(id) {
+  return (
+    startHour.value !== null &&
+    endHour.value !== null &&
+    id >= startHour.value &&
+    id < endHour.value
+  )
+}
+
+function selectSlot(slot) {
+  if (slot.disabled) return
+  if (startHour.value === null) {
+    startHour.value = slot.id
+    endHour.value = slot.id + 1
+    return
+  }
+  if (endHour.value === startHour.value + 1) {
+    if (slot.id > startHour.value) {
+      endHour.value = slot.id + 1
+      return
+    }
+  }
+  startHour.value = slot.id
+  endHour.value = slot.id + 1
+}
+
+// ------------------- СОЗДАНИЕ БРОНИ (ОБНОВЛЕНО) --------------------
+async function book() {
+  msg.value = ""
+  err.value = ""
+
+  if (!tariff.value) {
+    err.value = "Выберите тариф!"
+    return
+  }
+  if (!date.value || startHour.value === null || endHour.value === null) {
+    err.value = "Выберите дату и время!"
+    return
+  }
+
+  const duration = endHour.value - startHour.value
+  
+  // Считаем итоговую цену для мгновенного обновления UI
+  const totalPrice = tariff.value.price_per_hour * duration
+  
+  // Проверка на клиенте (опционально, для UX)
+  if (cabinetStore.user && cabinetStore.user.balance < totalPrice) {
+     err.value = "Недостаточно средств на балансе"
+     return
+  }
+
+  const start = new Date(date.value + "T00:00:00")
+  const startTime = new Date(start.getTime() + startHour.value * 3600000)
+  const isoStart = `${date.value}T${String(startTime.getHours()).padStart(2, '0')}:00`
+
+  try {
+    const { data } = await api.post("/api/bookings", {
+      pc_id: props.pc.id,
+      tariff_id: tariff.value.id,
+      start_time: isoStart,
+      duration_hours: duration
+    })
+
+    // 3. ВАЖНО: Обновляем глобальный стейт (баланс и активную бронь)
+    // data.usage приходит из backend: return jsonify({"message": "...", "usage": usage})
+    cabinetStore.updateAfterBooking(totalPrice, data.usage)
+
+    msg.value = "Бронь успешно создана!"
+    
+    // Эмитим событие, чтобы родитель (BookingView) обновил сетку занятости
+    // (или переключился на экран успеха)
+    emit("created") 
+    
+  } catch (e) {
+    err.value = e.response?.data?.error || "Ошибка бронирования"
+  }
+}
+
 onMounted(loadTariffs)
 </script>
 
 <style scoped>
+.slots-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
 
+.slot {
+  padding: 8px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.slot.disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.slot.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.slot.start {
+  border-left: 3px solid #fff;
+}
+
+.slot.end {
+  border-right: 3px solid #fff;
+}
 </style>

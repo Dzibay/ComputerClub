@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-defineProps({ pcs: Array })
+const props = defineProps({ pcs: Array })
 </script>
 
 <style scoped>
@@ -56,6 +56,21 @@ defineProps({ pcs: Array })
   color: var(--text-muted);
 }
 .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.pc-card {
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pc-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
 
 .pc-header {
   display: flex;

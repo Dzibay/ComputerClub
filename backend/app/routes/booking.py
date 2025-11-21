@@ -10,41 +10,31 @@ booking_bp = Blueprint("booking", __name__)
 
 @booking_bp.get("/pcs")
 def get_pcs():
-    cpu = request.args.get("cpu_id")
-    gpu = request.args.get("gpu_id")
-    os_id = request.args.get("os_id")
-    date = request.args.get("filter_date")
-    hours = request.args.get("filter_hours", type=int)
 
-    q = supabase.table("pcs").select("*, cpus(name), gpus(name), oses(name)")
+    # получаем все ПК с характеристиками
+    pcs = supabase.table("pcs").select(
+        "*, cpu:cpus(name), gpu:gpus(name), os:oses(name)"
+    ).execute().data
 
-    if cpu:
-        q = q.eq("cpu_id", cpu)
-    if gpu:
-        q = q.eq("gpu_id", gpu)
-    if os_id:
-        q = q.eq("os_id", os_id)
+    # получаем все брони
+    usages = supabase.table("pc_usages").select(
+        "pc_id, start_time, end_time"
+    ).eq("pc_usage_type_id", 1).execute().data
 
-    pcs = q.execute().data
+    # создаём словарь занятости
+    busy_map = {}
+    for u in usages:
+        busy_map.setdefault(u["pc_id"], []).append({
+            "start": u["start_time"],
+            "end": u["end_time"]
+        })
 
-    # если нет фильтров, выдаём все ПК
-    if not date or not hours:
-        return jsonify(pcs)
+    # прикрепляем занятость к каждому ПК
+    for pc in pcs:
+        pc["busy"] = busy_map.get(pc["id"], [])
 
-    req_start = datetime.fromisoformat(date)
-    req_end = req_start + timedelta(hours=hours)
+    return jsonify(pcs)
 
-    # получаем занятые ПК
-    busy = supabase.rpc("check_pc_busy", {
-        "start_ts": req_start.isoformat(),
-        "end_ts": req_end.isoformat()
-    }).execute().data
-
-    busy_ids = {b["pc_id"] for b in busy}
-
-    available = [pc for pc in pcs if pc["id"] not in busy_ids]
-
-    return jsonify(available)
 
 
 # ---------------------- Создание брони ----------------------
@@ -54,6 +44,7 @@ def get_pcs():
 def create_booking():
     user_id = int(get_jwt_identity())
     data = request.get_json()
+    print(data)
 
     pc_id = data["pc_id"]
     tariff_id = data["tariff_id"]
@@ -77,6 +68,7 @@ def create_booking():
         "start_ts": start_time.isoformat(),
         "end_ts": end_time.isoformat()
     }).execute().data
+    print(busy, pc_id, start_time.isoformat(), end_time.isoformat())
 
     if busy:
         return jsonify({"error": "ПК занят в это время"}), 400
