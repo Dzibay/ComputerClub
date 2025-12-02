@@ -10,10 +10,10 @@ booking_bp = Blueprint("booking", __name__)
 
 @booking_bp.get("/pcs")
 def get_pcs():
-
-    # получаем все ПК с характеристиками
+    # Обновляем запрос: добавляем pc_software(software(id, name))
+    # Это позволит фронтенду видеть список установленных программ
     pcs = supabase.table("pcs").select(
-        "*, cpu:cpus(name), gpu:gpus(name), os:oses(name)"
+        "*, cpu:cpus(name), gpu:gpus(name), os:oses(name), pc_software(software(id, name))"
     ).execute().data
 
     # получаем все брони
@@ -34,7 +34,6 @@ def get_pcs():
         pc["busy"] = busy_map.get(pc["id"], [])
 
     return jsonify(pcs)
-
 
 
 # ---------------------- Создание брони ----------------------

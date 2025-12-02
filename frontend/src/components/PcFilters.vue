@@ -6,6 +6,7 @@
     </div>
 
     <div class="filters-grid">
+      
       <div class="field">
         <label>Процессор (CPU)</label>
         <select v-model="cpu">
@@ -19,6 +20,14 @@
         <select v-model="gpu">
           <option value="">Все карты</option>
           <option v-for="g in gpus" :key="g.id" :value="g.id">{{ g.name }}</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Игра / Программа</label>
+        <select v-model="software">
+          <option value="">Любая</option>
+          <option v-for="s in softwareList" :key="s.id" :value="s.id">{{ s.name }}</option>
         </select>
       </div>
 
@@ -56,29 +65,48 @@ import { useCabinetStore } from '../store/cabinet'
 
 const cabinetStore = useCabinetStore()
 
-// Используем computed или просто берем значения, если они не меняются
+// Данные из стора
 const cpus = cabinetStore.dictionaries.cpus
 const gpus = cabinetStore.dictionaries.gpus
 const oses = cabinetStore.dictionaries.oses
 
+// Локальный список софта (загружаем отдельно, если его нет в сторе)
+const softwareList = ref([])
+
+// Модели фильтров
 const cpu = ref('')
 const gpu = ref('')
 const os = ref('')
+const software = ref('') // Новое поле
 const date = ref('')
 const hours = ref(1)
+
+const emit = defineEmits(['apply'])
+
+async function loadSoftware() {
+  try {
+    const res = await api.get('/api/admin/software')
+    softwareList.value = res.data
+  } catch (e) {
+    console.error("Ошибка загрузки списка ПО", e)
+  }
+}
 
 function applyFilters() {
   const filters = {
     cpu_id: cpu.value || undefined,
     gpu_id: gpu.value || undefined,
     os_id: os.value || undefined,
+    software_id: software.value || undefined, // Передаем ID софта
     filter_date: date.value || undefined,
     filter_hours: hours.value || undefined
   }
   emit('apply', filters)
 }
 
-const emit = defineEmits(['apply'])
+onMounted(() => {
+  loadSoftware()
+})
 </script>
 
 <style scoped>
@@ -100,18 +128,40 @@ const emit = defineEmits(['apply'])
   align-items: end;
 }
 
+.field label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.field select, .field input {
+  width: 100%;
+  padding: 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  color: white;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.field select:focus, .field input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
 .field.small {
-  flex: 0 0 80px; /* Узкое поле для часов */
+  flex: 0 0 80px; 
   min-width: 80px;
 }
 
 .full-btn {
   width: 100%;
-  height: 46px; /* Высота чтобы совпадать с инпутами */
-  margin-bottom: 1rem; /* Компенсация margin-bottom у инпутов */
+  height: 44px; /* Чуть подкорректировал высоту */
+  margin-bottom: 1px;
 }
 
-/* Убираем иконку календаря в Chrome для темной темы */
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;

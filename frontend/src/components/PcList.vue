@@ -37,6 +37,20 @@
           </div>
         </div>
 
+        <div class="pc-software" v-if="pc.pc_software && pc.pc_software.length > 0">
+          <div class="sw-divider"></div>
+          <span class="sw-label">Установлено:</span>
+          <div class="sw-tags">
+            <span 
+              v-for="link in pc.pc_software" 
+              :key="link.id" 
+              class="sw-tag"
+            >
+              {{ link.software.name }}
+            </span>
+          </div>
+        </div>
+
         <button class="btn-primary book-btn" @click="$emit('select', pc)">
           Выбрать
         </button>
@@ -66,6 +80,8 @@ const props = defineProps({ pcs: Array })
 .pc-card {
   padding: 1.5rem;
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 .pc-card:hover {
   transform: translateY(-5px);
@@ -113,8 +129,46 @@ const props = defineProps({ pcs: Array })
   text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
+/* --- Стили для блока программ --- */
+.pc-software {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  flex-grow: 1; /* Чтобы кнопки всегда были внизу, если карточки разной высоты */
+}
+
+.sw-divider {
+  height: 1px;
+  background: var(--border-glass);
+  margin-bottom: 0.8rem;
+}
+
+.sw-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.sw-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sw-tag {
+  font-size: 0.75rem;
+  background: rgba(99, 102, 241, 0.1); /* Прозрачный фиолетовый */
+  color: #c084fc;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  white-space: nowrap;
+}
+
 .book-btn {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: auto; /* Прижимает кнопку к низу */
 }
 </style>

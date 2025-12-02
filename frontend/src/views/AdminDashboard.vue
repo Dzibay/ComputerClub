@@ -27,7 +27,8 @@
             v-if="active === 'pcs'"
             title="Компьютеры"
             apiPath="/api/admin/pcs"
-            :columns="['id', 'cpu_id','gpu_id','os_id']" 
+            :columns="['id', 'cpu_id','gpu_id','os_id']"
+            :hasSoftwareSelect="true" 
           />
           <AdminCrudTable
             v-if="active === 'tariffs'"
@@ -56,6 +57,13 @@
             apiPath="/api/admin/oses"
             :columns="['name']"
           />
+
+          <AdminCrudTable
+            v-if="active === 'software'"
+            title="Программное обеспечение"
+            apiPath="/api/admin/software"
+            :columns="['name']"
+          />
         </div>
       </transition>
     </section>
@@ -72,14 +80,14 @@ const menu = [
   { key: 'cpu', label: 'Процессоры' },
   { key: 'gpu', label: 'Видеокарты' },
   { key: 'os', label: 'ОС' },
+  { key: 'software', label: 'Игры и ПО' }, // Новый пункт
 ]
 
 const active = ref('pcs')
 </script>
 
 <style scoped>
-/* Используем глобальный grid из main.css .admin-dashboard */
-
+/* Стили без изменений */
 .sidebar-header {
   padding: 0 1rem 1.5rem 1rem;
   margin-bottom: 1rem;
@@ -115,7 +123,7 @@ const active = ref('pcs')
 .nav-btn:hover {
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-main);
-  padding-left: 1.5rem; /* Эффект сдвига */
+  padding-left: 1.5rem;
 }
 
 .nav-btn.active {
@@ -124,7 +132,6 @@ const active = ref('pcs')
   box-shadow: var(--glow);
 }
 
-/* Декоративная точка слева у активного элемента */
 .indicator {
   width: 6px;
   height: 6px;
@@ -141,7 +148,6 @@ const active = ref('pcs')
   transform: scale(1);
 }
 
-/* Анимация смены таблиц */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
