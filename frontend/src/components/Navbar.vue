@@ -37,11 +37,14 @@
 <script setup>
 import { useAuthStore } from '../store/auth'
 import { useRouter } from 'vue-router'
+import { useCabinetStore} from '../store/cabinet'
 
 const auth = useAuthStore()
 const router = useRouter()
+const cabinet = useCabinetStore()
 
 function logout() {
+  cabinet.clearCabinet()
   auth.logout()
   router.push('/')
 }

@@ -59,12 +59,20 @@ export const useCabinetStore = defineStore('cabinet', {
     },
 
     // 3. СОЗДАНИЕ БРОНИ (Вызывается из формы бронирования)
-    // Мы принимаем `price` и объект `usage`, который вернул бэкенд
     updateAfterBooking(price, newBooking) {
       if (this.user) {
         this.user.balance -= price // Списываем баланс визуально
       }
       this.activeBooking = newBooking // Устанавливаем активную бронь
+    },
+
+    // 4. ОЧИСТКА КАБИНЕТА (Вызывается при LogOut) [НОВОЕ]
+    clearCabinet() {
+      this.user = null
+      this.activeBooking = null
+      // Dictionaries (справочники) мы не чистим специально, 
+      // чтобы следующему пользователю не пришлось их грузить заново.
+      // Если хотите полный сброс всего, используйте this.$reset()
     }
   }
 })
