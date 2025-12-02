@@ -73,7 +73,6 @@ const props = defineProps({
 
 const emit = defineEmits(["save", "cancel"])
 
-// Основные данные ПК
 const pc = ref({
   cpu_id: "",
   gpu_id: "",
@@ -81,17 +80,14 @@ const pc = ref({
   ...props.modelValue
 })
 
-// Массив ID выбранных программ
 const selectedSoftware = ref([])
 
-// Справочники
 const cpus = ref([])
 const gpus = ref([])
 const oses = ref([])
 const softwareList = ref([])
 
 async function load() {
-  // Загружаем все справочники параллельно
   const [resCpu, resGpu, resOs, resSw] = await Promise.all([
     api.get('/api/admin/cpus'),
     api.get('/api/admin/gpus'),
@@ -107,16 +103,12 @@ async function load() {
   initForm(props.modelValue)
 }
 
-// Инициализация формы данными
 function initForm(data) {
   if (!data) return
   
   pc.value = { ...data }
 
-  // Если у ПК есть список софта (приходит с бэка как массив объектов pc_software),
-  // нам нужно вытащить оттуда ID программ.
   if (data.pc_software && Array.isArray(data.pc_software)) {
-    // Структура с бэка: [{ software: { id: 1, name: '...' } }, ...]
     selectedSoftware.value = data.pc_software.map(item => item.software.id)
   } else {
     selectedSoftware.value = []
@@ -137,7 +129,7 @@ function savePc() {
     cpu_id: pc.value.cpu_id || null,
     gpu_id: pc.value.gpu_id || null,
     os_id: pc.value.os_id || null,
-    software_ids: selectedSoftware.value // Отправляем массив ID
+    software_ids: selectedSoftware.value
   }
 
   if (pc.value.id) payload.id = pc.value.id
@@ -186,7 +178,6 @@ select, input {
 }
 select:focus { border-color: var(--primary); }
 
-/* --- Software Checkbox List Styles --- */
 .software-col {
   display: flex;
   flex-direction: column;
@@ -238,7 +229,6 @@ select:focus { border-color: var(--primary); }
   background: rgba(99, 102, 241, 0.2);
 }
 
-/* --- Actions --- */
 .actions {
   display: flex;
   gap: 10px;
@@ -265,7 +255,6 @@ select:focus { border-color: var(--primary); }
 }
 .btn-secondary:hover { color: white; border-color: white; }
 
-/* Custom Scrollbar */
 .custom-scroll::-webkit-scrollbar { width: 6px; }
 .custom-scroll::-webkit-scrollbar-track { background: transparent; }
 .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }

@@ -262,7 +262,7 @@ onMounted(load)
 .modal-content {
   width: 100%;
   max-width: 500px;
-  background: #1e2230; /* Твердый фон, чтобы не просвечивало слишком сильно */
+  background: #1e2230;
   border: 1px solid var(--border-glass);
   padding: 2rem;
   border-radius: var(--radius);

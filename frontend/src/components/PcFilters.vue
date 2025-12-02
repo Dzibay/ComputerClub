@@ -65,19 +65,16 @@ import { useCabinetStore } from '../store/cabinet'
 
 const cabinetStore = useCabinetStore()
 
-// Данные из стора
 const cpus = cabinetStore.dictionaries.cpus
 const gpus = cabinetStore.dictionaries.gpus
 const oses = cabinetStore.dictionaries.oses
 
-// Локальный список софта (загружаем отдельно, если его нет в сторе)
 const softwareList = ref([])
 
-// Модели фильтров
 const cpu = ref('')
 const gpu = ref('')
 const os = ref('')
-const software = ref('') // Новое поле
+const software = ref('')
 const date = ref('')
 const hours = ref(1)
 
@@ -97,7 +94,7 @@ function applyFilters() {
     cpu_id: cpu.value || undefined,
     gpu_id: gpu.value || undefined,
     os_id: os.value || undefined,
-    software_id: software.value || undefined, // Передаем ID софта
+    software_id: software.value || undefined,
     filter_date: date.value || undefined,
     filter_hours: hours.value || undefined
   }
@@ -158,7 +155,7 @@ onMounted(() => {
 
 .full-btn {
   width: 100%;
-  height: 44px; /* Чуть подкорректировал высоту */
+  height: 44px;
   margin-bottom: 1px;
 }
 

@@ -80,14 +80,13 @@ const menu = [
   { key: 'cpu', label: 'Процессоры' },
   { key: 'gpu', label: 'Видеокарты' },
   { key: 'os', label: 'ОС' },
-  { key: 'software', label: 'Игры и ПО' }, // Новый пункт
+  { key: 'software', label: 'Игры и ПО' },
 ]
 
 const active = ref('pcs')
 </script>
 
 <style scoped>
-/* Стили без изменений */
 .sidebar-header {
   padding: 0 1rem 1.5rem 1rem;
   margin-bottom: 1rem;

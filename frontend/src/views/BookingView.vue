@@ -42,7 +42,6 @@ const selectedPc = ref(null)
 async function fetchPcs() {
   try {
     const { data } = await api.get('/api/bookings/pcs')
-    // Бэкенд теперь возвращает поле pc_software = [{software: {...}}, ...]
     allPcs.value = data
     filteredPcs.value = data 
     console.log(allPcs)
@@ -64,12 +63,9 @@ function applyFilters(filters = {}) {
   if (filters.os_id)
     result = result.filter(pc => pc.os_id == filters.os_id)
 
-  // --- НОВОЕ: Фильтрация по софту ---
-  // filters.software_id приходит из PcFilters
+  // --- Фильтрация по софту ---
   if (filters.software_id) {
     result = result.filter(pc => {
-      // pc.pc_software - это массив связей, внутри каждой есть объект software
-      // Проверяем, есть ли в этом массиве программа с нужным ID
       return pc.pc_software && pc.pc_software.some(link => link.software.id == filters.software_id)
     })
   }
@@ -113,7 +109,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Стили без изменений */
 .booking-page {
   max-width: 1200px;
   margin: 0 auto;

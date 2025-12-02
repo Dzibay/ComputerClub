@@ -43,14 +43,12 @@ import { useCabinetStore } from '../store/cabinet'
 
 const cabinetStore = useCabinetStore()
 
-// Загружаем всё при входе в Layout
 onMounted(() => {
   cabinetStore.initCabinet()
 })
 </script>
 
 <style scoped>
-/* Ваши стили + стиль лоадера */
 .loading-overlay {
   display: flex;
   justify-content: center;
@@ -60,10 +58,9 @@ onMounted(() => {
   color: var(--text-muted);
 }
 
-/* --- Layout Grid --- */
 .cabinet-layout {
   display: grid;
-  grid-template-columns: 280px 1fr; /* Фиксированное меню, гибкий контент */
+  grid-template-columns: 280px 1fr;
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -71,18 +68,16 @@ onMounted(() => {
   min-height: 80vh;
 }
 
-/* --- Sidebar --- */
 .sidebar {
   padding: 1.5rem;
   height: fit-content;
   position: sticky;
-  top: 100px; /* Отступ от верха экрана при скролле */
+  top: 100px;
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
-/* --- Profile Block --- */
 .profile-block {
   display: flex;
   flex-direction: column;
@@ -124,7 +119,6 @@ onMounted(() => {
   border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-/* --- Navigation Menu --- */
 .nav-menu {
   display: flex;
   flex-direction: column;
@@ -145,22 +139,20 @@ onMounted(() => {
 
 .nav-menu a .icon {
   font-size: 1.2rem;
-  filter: grayscale(100%); /* Иконки серые неактивные */
+  filter: grayscale(100%);
   transition: filter 0.3s;
 }
 
-/* Hover State */
 .nav-menu a:hover {
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-main);
-  transform: translateX(5px); /* Легкий сдвиг вправо */
+  transform: translateX(5px);
 }
 
 .nav-menu a:hover .icon {
   filter: grayscale(0%);
 }
 
-/* Active State */
 .nav-menu a.active {
   background: var(--primary);
   color: white;
@@ -172,13 +164,11 @@ onMounted(() => {
   filter: grayscale(0%);
 }
 
-/* --- Content Area --- */
 .content {
   padding: 2rem;
-  min-height: 500px; /* Чтобы футер не прилипал на пустых страницах */
+  min-height: 500px;
 }
 
-/* Анимация перехода между вкладками внутри кабинета */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
@@ -188,16 +178,15 @@ onMounted(() => {
   opacity: 0;
 }
 
-/* --- Mobile Responsive --- */
 @media (max-width: 768px) {
   .cabinet-layout {
-    grid-template-columns: 1fr; /* Одна колонка */
+    grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 
   .sidebar {
-    position: static; /* Отключаем липкость на мобильных */
-    flex-direction: row; /* Горизонтальная ориентация если нужно */
+    position: static;
+    flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
@@ -222,12 +211,12 @@ onMounted(() => {
     width: 100%;
     margin-top: 1rem;
     flex-direction: row;
-    overflow-x: auto; /* Горизонтальный скролл меню */
+    overflow-x: auto;
     padding-bottom: 5px;
   }
 
   .nav-menu a {
-    white-space: nowrap; /* Текст не переносится */
+    white-space: nowrap;
     padding: 0.6rem 1rem;
   }
   

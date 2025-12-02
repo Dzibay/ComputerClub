@@ -1,26 +1,22 @@
-/* src/assets/main.css */
-
 :root {
-  /* Палитра (Dark Cyber) */
-  --bg-app: #0b0d14;         /* Глубокий темный фон */
-  --bg-glass: rgba(30, 34, 48, 0.6); /* Полупрозрачные карточки */
+  --bg-app: #0b0d14;
+  --bg-glass: rgba(30, 34, 48, 0.6);
   --bg-glass-hover: rgba(40, 45, 65, 0.8);
   
-  --primary: #6366f1;        /* Индиго (акцент) */
+  --primary: #6366f1;
   --primary-hover: #4f46e5;
   --danger: #ef4444;
   
-  --text-main: #f8fafc;      /* Почти белый текст */
-  --text-muted: #94a3b8;     /* Серый текст */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
   
   --border-glass: rgba(255, 255, 255, 0.08);
-  --glow: 0 0 20px rgba(99, 102, 241, 0.15); /* Легкое свечение */
+  --glow: 0 0 20px rgba(99, 102, 241, 0.15);
   
   --radius: 12px;
   --transition: all 0.3s ease;
 }
 
-/* --- Reset & Base --- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -43,9 +39,6 @@ a {
 
 ul { list-style: none; }
 
-/* --- Utility Classes --- */
-
-/* Стеклянный эффект */
 .glass-card, .glass-nav, .glass-panel {
   background: var(--bg-glass);
   backdrop-filter: blur(12px);
@@ -54,7 +47,6 @@ ul { list-style: none; }
   border-radius: var(--radius);
 }
 
-/* Анимация появления */
 .fade-in {
   animation: fadeIn 0.5s ease-out forwards;
 }
@@ -64,7 +56,6 @@ ul { list-style: none; }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Заголовки */
 h1, h2, h3 {
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -79,7 +70,6 @@ h2.title, h2.page-title {
   -webkit-text-fill-color: transparent;
 }
 
-/* --- Buttons --- */
 button, .btn-primary, .btn-outline, .btn-danger, .nav-btn {
   display: inline-flex;
   align-items: center;
@@ -126,7 +116,6 @@ button, .btn-primary, .btn-outline, .btn-danger, .nav-btn {
   background: rgba(239, 68, 68, 0.2);
 }
 
-/* --- Forms & Inputs --- */
 input, select {
   width: 100%;
   padding: 0.8rem 1rem;
@@ -152,7 +141,6 @@ label {
   font-size: 0.9rem;
 }
 
-/* --- Navbar Styles (Global overrides) --- */
 .navbar {
   position: sticky;
   top: 0;
@@ -192,7 +180,6 @@ label {
 
 .admin-link { color: #f59e0b; }
 
-/* --- Layout Helpers --- */
 .cabinet-layout, .admin-dashboard {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -203,7 +190,6 @@ label {
   min-height: 80vh;
 }
 
-/* Sidebar */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -237,12 +223,10 @@ label {
   color: white;
 }
 
-/* Content Areas */
 .content.glass-card {
   padding: 2rem;
 }
 
-/* --- Cards Grid (PcList) --- */
 .pc-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -302,7 +286,6 @@ label {
   font-weight: 500;
 }
 
-/* --- Cabinet Specifics --- */
 .cabinet-wrapper {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -331,7 +314,6 @@ label {
   font-size: 1.2rem;
 }
 
-/* Profile Block in Sidebar */
 .profile-block {
   margin-bottom: 2rem;
   text-align: center;

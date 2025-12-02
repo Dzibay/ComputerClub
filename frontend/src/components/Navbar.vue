@@ -51,7 +51,6 @@ function logout() {
 </script>
 
 <style scoped>
-/* Специфичные отступы для навбара, если глобальных мало */
 .logout-btn {
   padding: 0.4rem 1rem;
   font-size: 0.9rem;
@@ -59,7 +58,7 @@ function logout() {
 }
 
 .admin-link {
-  color: #fbbf24; /* Amber 400 */
+  color: #fbbf24;
   position: relative;
 }
 

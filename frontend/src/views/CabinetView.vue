@@ -50,7 +50,6 @@
 import { useCabinetStore } from '../store/cabinet'
 
 const cabinetStore = useCabinetStore()
-// onMounted не нужен, данные уже есть в store благодаря Layout
 </script>
 
 <style scoped>

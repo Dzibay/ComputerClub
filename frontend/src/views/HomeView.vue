@@ -141,7 +141,6 @@ const auth = useAuthStore()
 const isLoading = ref(true)
 
 const tariffs = ref([])
-// Добавили поле software
 const hardware = ref({ cpus: [], gpus: [], oses: [], software: [] })
 
 const isVip = (name) => {
@@ -151,7 +150,6 @@ const isVip = (name) => {
 const fetchData = async () => {
   try {
     isLoading.value = true
-    // Добавлен запрос software
     const [resTariffs, resCpus, resGpus, resOses, resSoftware] = await Promise.all([
       api.get('/api/admin/tariffs'),
       api.get('/api/admin/cpus'),
@@ -177,7 +175,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Основные стили остались прежними, добавлены детали для software */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
 .section-title.center { text-align: center; margin-bottom: 1rem; font-size: 2.5rem; font-weight: 800; text-transform: uppercase; }
 .section-subtitle.center { text-align: center; color: var(--text-muted); margin-bottom: 3rem; font-size: 1.1rem; }
@@ -201,7 +198,6 @@ onMounted(() => {
 .hardware-list li:last-child { border-bottom: none; }
 .tags-container { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
 
-/* Доп. стили для блока с софтом, чтобы ограничить высоту если игр много */
 .scrollable-tags {
   max-height: 150px;
   overflow-y: auto;

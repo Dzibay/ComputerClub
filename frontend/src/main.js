@@ -10,6 +10,6 @@ app.use(pinia)
 app.use(router)
 
 const auth = useAuthStore()
-auth.restore()   // 🔥 ВОССТАНОВЛЕНИЕ НАЧАЛЬНОГО СОСТОЯНИЯ
+auth.restore()
 
 app.mount('#app')

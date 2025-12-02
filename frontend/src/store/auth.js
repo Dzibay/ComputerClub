@@ -30,7 +30,6 @@ export const useAuthStore = defineStore('auth', {
         const { data } = await api.get('/api/auth/me')
         this.user = data
       } catch (err) {
-        // токен протух — принудительный выход
         this.logout()
       }
     },

@@ -129,11 +129,10 @@ const props = defineProps({ pcs: Array })
   text-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
-/* --- Стили для блока программ --- */
 .pc-software {
   margin-top: 0.5rem;
   margin-bottom: 1rem;
-  flex-grow: 1; /* Чтобы кнопки всегда были внизу, если карточки разной высоты */
+  flex-grow: 1;
 }
 
 .sw-divider {
@@ -159,7 +158,7 @@ const props = defineProps({ pcs: Array })
 
 .sw-tag {
   font-size: 0.75rem;
-  background: rgba(99, 102, 241, 0.1); /* Прозрачный фиолетовый */
+  background: rgba(99, 102, 241, 0.1);
   color: #c084fc;
   padding: 3px 8px;
   border-radius: 4px;
@@ -169,6 +168,6 @@ const props = defineProps({ pcs: Array })
 
 .book-btn {
   width: 100%;
-  margin-top: auto; /* Прижимает кнопку к низу */
+  margin-top: auto;
 }
 </style>

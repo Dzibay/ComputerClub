@@ -55,12 +55,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '../api/axios'
-import { useCabinetStore } from '../store/cabinet' // 1. Импортируем стор
+import { useCabinetStore } from '../store/cabinet'
 
 const props = defineProps({ pc: Object })
 const emit = defineEmits(['created'])
 
-// 2. Инициализируем стор
 const cabinetStore = useCabinetStore()
 
 const tariffs = ref([])
@@ -75,7 +74,6 @@ const err = ref("")
 
 async function loadTariffs() {
   try {
-    // Тарифы можно оставить локально, так как они нужны только здесь
     const { data } = await api.get('/api/admin/tariffs')
     tariffs.value = data
   } catch (e) {
@@ -83,14 +81,14 @@ async function loadTariffs() {
   }
 }
 
-// ------------------- ВРЕМЕННЫЕ СЛОТЫ (Без изменений) --------------------
+// ------------------- ВРЕМЕННЫЕ СЛОТЫ --------------------
 const timeSlots = computed(() => {
   if (!date.value) return []
 
   const slots = []
   const baseDate = new Date(date.value + "T00:00:00")
 
-  for (let i = 0; i < 24; i++) { // Исправил 36 на 24 (обычно сутки), но если клуб 24/7 можно оставить как было
+  for (let i = 0; i < 24; i++) {
     const d = new Date(baseDate.getTime() + i * 3600000)
     const label = `${String(d.getHours()).padStart(2, "0")}:00`
 
@@ -115,7 +113,7 @@ function slotBusy(slotDate) {
   })
 }
 
-// ------------------- ЛОГИКА ВЫБОРА (Без изменений) --------------------
+// ------------------- ЛОГИКА ВЫБОРА --------------------
 function resetSelection() {
   startHour.value = null
   endHour.value = null
@@ -147,7 +145,7 @@ function selectSlot(slot) {
   endHour.value = slot.id + 1
 }
 
-// ------------------- СОЗДАНИЕ БРОНИ (ОБНОВЛЕНО) --------------------
+// ------------------- СОЗДАНИЕ БРОНИ --------------------
 async function book() {
   msg.value = ""
   err.value = ""
@@ -162,11 +160,8 @@ async function book() {
   }
 
   const duration = endHour.value - startHour.value
-  
-  // Считаем итоговую цену для мгновенного обновления UI
   const totalPrice = tariff.value.price_per_hour * duration
   
-  // Проверка на клиенте (опционально, для UX)
   if (cabinetStore.user && cabinetStore.user.balance < totalPrice) {
      err.value = "Недостаточно средств на балансе"
      return
@@ -184,14 +179,8 @@ async function book() {
       duration_hours: duration
     })
 
-    // 3. ВАЖНО: Обновляем глобальный стейт (баланс и активную бронь)
-    // data.usage приходит из backend: return jsonify({"message": "...", "usage": usage})
     cabinetStore.updateAfterBooking(totalPrice, data.usage)
-
     msg.value = "Бронь успешно создана!"
-    
-    // Эмитим событие, чтобы родитель (BookingView) обновил сетку занятости
-    // (или переключился на экран успеха)
     emit("created") 
     
   } catch (e) {
