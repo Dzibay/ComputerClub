@@ -27,7 +27,7 @@
             v-if="active === 'pcs'"
             title="Компьютеры"
             apiPath="/api/admin/pcs"
-            :columns="['id', 'cpu_id','gpu_id','os_id']"
+            :columns="['id', 'cpu_name', 'gpu_name', 'os_name']" 
             :hasSoftwareSelect="true" 
           />
           <AdminCrudTable

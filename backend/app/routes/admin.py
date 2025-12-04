@@ -137,18 +137,23 @@ def update_tariff(tid):
 def delete_tariff(tid):
     return jsonify(supabase.table("tariffs").delete().eq("id", tid).execute().data)
 
-# ---------------- PC CRUD (UPDATED) ----------------
+# ---------------- PC CRUD ----------------
 
 @admin_bp.get("/pcs")
 @admin_required
 def get_pcs():
-    # Добавляем в выборку связь с pc_software и вложенную software
-    # Это вернет массив pc_software: [{software: {id, name}}, ...] внутри каждого пк
-    return jsonify(supabase
-        .table("pcs")
-        .select("*, cpu:cpus(name), gpu:gpus(name), os:oses(name), pc_software(software(*))")
-        .execute()
-        .data)
+    response = supabase.table("pcs").select(
+        "*, cpu:cpus(name), gpu:gpus(name), os:oses(name), pc_software(software(*))"
+    ).execute()
+    
+    data = response.data
+
+    for pc in data:
+        pc['cpu_name'] = pc['cpu']['name'] if pc.get('cpu') else '-'
+        pc['gpu_name'] = pc['gpu']['name'] if pc.get('gpu') else '-'
+        pc['os_name'] = pc['os']['name'] if pc.get('os') else '-'
+
+    return jsonify(data)
 
 @admin_bp.post("/pcs")
 @admin_required

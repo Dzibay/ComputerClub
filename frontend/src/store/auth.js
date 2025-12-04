@@ -21,6 +21,10 @@ export const useAuthStore = defineStore('auth', {
       api.defaults.headers.common.Authorization = `Bearer ${this.token}`
     },
 
+    async register(payload) {
+      await api.post('/api/auth/register', payload)
+    },
+
     async restore() {
       if (!this.token) return
 

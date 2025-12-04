@@ -28,6 +28,11 @@ const routes = [
   name: 'admin-dashboard',
   component: AdminDashboard,
   meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
+    path: '/cabinet-layout',
+    name: 'cabinet-layout',
+    component: CabinetLayout
   }
 ]
 
